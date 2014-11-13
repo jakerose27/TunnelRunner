@@ -3,6 +3,10 @@ package net.wearethegreatest.tunnelrunner;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Looper;
 import android.support.v4.app.Fragment;
@@ -21,9 +25,14 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 
+import java.util.Random;
 
-public class MainActivity extends ActionBarActivity {
-    private static String IP_ADDR = "http://192.168.0.111/rpi";
+
+public class MainActivity extends ActionBarActivity implements SensorEventListener {
+
+    private SensorManager mSensorManager;
+    private Sensor mSensor;
+    private long lastUpdate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +43,65 @@ public class MainActivity extends ActionBarActivity {
                     .add(R.id.container, new PlaceholderFragment())
                     .commit();
         }
+
+        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        lastUpdate = System.currentTimeMillis();
+    }
+
+    public void onAccuracyChanged(Sensor sensor, int foo) {
+    }
+
+    public void onSensorChanged(SensorEvent event) {
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            getAccelerometer(event);
+        }
+    }
+
+    // Based on tutorial from http://vogella.com/tutorials/AndroidSensor/article.html
+    private void getAccelerometer(SensorEvent event) {
+        float[] values = event.values;
+        // Movement
+        float x = values[0];
+        float y = values[1];
+        float z = values[2];
+
+        float accelationSquareRoot = (x * x + y * y + z * z)
+                / (SensorManager.GRAVITY_EARTH * SensorManager.GRAVITY_EARTH);
+        long actualTime = event.timestamp;
+        if (accelationSquareRoot >= 4) //
+        {
+            // Only do this shit every one second
+            if (actualTime - lastUpdate < 1000000000) {
+                return;
+            }
+            System.out.println("Time: " + (actualTime));
+            lastUpdate = actualTime;
+
+            System.out.println("Sensor 1: " + event.values[0]);
+
+            Random rand = new Random();
+            int r = rand.nextInt(256);
+            int g = rand.nextInt(256);
+            int b = rand.nextInt(256);
+            sendColor(r, g, b);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // register this class as a listener
+        mSensorManager.registerListener(this,
+                mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
+                mSensorManager.SENSOR_DELAY_NORMAL);
+    }
+
+    @Override
+    protected void onPause() {
+        // unregister listener
+        super.onPause();
+        mSensorManager.unregisterListener(this);
     }
 
     @Override
@@ -108,7 +176,6 @@ public class MainActivity extends ActionBarActivity {
 
                 // Format URL
                 String url = "http://" + ip_addr + "/rpi";
-                System.out.println("URL: " + url);
 
                 try {
                     HttpPost request = new HttpPost(url);
@@ -127,14 +194,11 @@ public class MainActivity extends ActionBarActivity {
                             "application/json");
                     request.setEntity(params);
                     HttpResponse response = httpClient.execute(request);
-                    System.out.println(response);
                     // handle response here...
                 } catch (Exception ex) {
                     // handle exception here
-                    System.out.println("Exception");
                     System.out.println(ex);
                 } finally {
-                    System.out.println("Finally");
                     httpClient.getConnectionManager().shutdown();
                     Looper.loop();
                 }
