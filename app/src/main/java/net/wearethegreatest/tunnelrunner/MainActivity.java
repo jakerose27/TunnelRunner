@@ -1,5 +1,8 @@
 package net.wearethegreatest.tunnelrunner;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Looper;
 import android.support.v4.app.Fragment;
@@ -9,6 +12,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+
+import android.preference.PreferenceManager;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -31,7 +36,6 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -48,6 +52,7 @@ public class MainActivity extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
 
@@ -70,11 +75,9 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-
     public void sendRed(View view) {
         sendColor(255, 0, 0);
     }
-
 
     public void sendGreen(View view) {
         sendColor(0, 255, 0);
@@ -84,20 +87,31 @@ public class MainActivity extends ActionBarActivity {
         sendColor(0, 0, 255);
     }
 
-    public void sendColor(int red, int green, int blue){
+    public void sendColor(int red, int green, int blue) {
+
         final Integer RED = red;
         final Integer GREEN = green;
         final Integer BLUE = blue;
+
+        // `this` will refer to thread once inside the thread
+        final Context thisActivity = this;
+
         Thread t = new Thread() {
 
             public void run() {
                 Looper.prepare();
                 HttpClient httpClient = new DefaultHttpClient();
-//                String url = "http://".concat(URL);
-//                url.concat("/rpi");
+
+                // Get IP address from prefs
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(thisActivity);
+                String ip_addr =  prefs.getString("ip_addr", "");
+
+                // Format URL
+                String url = "http://" + ip_addr + "/rpi";
+                System.out.println("URL: " + url);
 
                 try {
-                    HttpPost request = new HttpPost(IP_ADDR);
+                    HttpPost request = new HttpPost(url);
                     String a = "{\"lights\" : [{\"blue\":";
                     String b = ", \"green\": ";
                     String c = ", \"intensity\": 0.5, \"lightId\": 1, \"red\": ";
@@ -126,6 +140,7 @@ public class MainActivity extends ActionBarActivity {
                 }
             }
         };
+
         t.start();
     }
 }
