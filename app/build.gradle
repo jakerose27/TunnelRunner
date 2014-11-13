@@ -1,21 +1,30 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        config {
+            keyAlias 'TunnelRunnerKey'
+            keyPassword 'password'
+            storeFile file('/Users/rliebz/Documents/Important/android-key.jks')
+            storePassword 'password'
+        }
+    }
     compileSdkVersion 21
-    buildToolsVersion "21.1.0"
-
+    buildToolsVersion '21.1.0'
     defaultConfig {
-        applicationId "net.wearethegreatest.tunnelrunner"
+        applicationId 'net.wearethegreatest.tunnelrunner'
         minSdkVersion 8
         targetSdkVersion 21
         versionCode 1
-        versionName "1.0"
+        versionName '1.0'
     }
     buildTypes {
         release {
             runProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+    productFlavors {
     }
 }
 
