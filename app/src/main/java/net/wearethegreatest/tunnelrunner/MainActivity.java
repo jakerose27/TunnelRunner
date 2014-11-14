@@ -33,6 +33,8 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
     private SensorManager mSensorManager;
     private Sensor mSensor;
     private long lastUpdate;
+    private int position;
+    public LightObject objy;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +49,9 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         lastUpdate = System.currentTimeMillis();
+
+        objy = new LightObject();
+        randomizeColor();
     }
 
     public void onAccuracyChanged(Sensor sensor, int foo) {
@@ -71,20 +76,13 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
         long actualTime = event.timestamp;
         if (accelationSquareRoot >= 4) //
         {
-            // Only do this shit every one second
-            if (actualTime - lastUpdate < 1000000000) {
+            // Only do this shit every half second
+            if (actualTime - lastUpdate < 500000000) {
                 return;
             }
-            System.out.println("Time: " + (actualTime));
             lastUpdate = actualTime;
 
-            System.out.println("Sensor 1: " + event.values[0]);
-
-            Random rand = new Random();
-            int r = rand.nextInt(256);
-            int g = rand.nextInt(256);
-            int b = rand.nextInt(256);
-            sendColor(r, g, b);
+            randomizeColor();
         }
     }
 
@@ -143,16 +141,29 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
         }
     }
 
-    public void sendRed(View view) {
-        sendColor(255, 0, 0);
+    public void randomizeView(View view) {
+        randomizeColor();
     }
 
-    public void sendGreen(View view) {
-        sendColor(0, 255, 0);
+    public void randomizeColor() {
+        Random rand = new Random();
+        objy.red = rand.nextInt(256);
+        objy.green = rand.nextInt(256);
+        objy.blue = rand.nextInt(256);
+        sendColor(objy.red, objy.green, objy.blue);
     }
 
-    public void sendBlue(View view) {
-        sendColor(0, 0, 255);
+    public void moveLeft(View view) {
+        move(-1);
+    }
+
+    public void moveRight(View view) {
+        move(1);
+    }
+
+    public void move(int num) {
+        objy.setPosition(objy.getPosition() + num);
+        sendColor(objy.red, objy.green, objy.blue);
     }
 
     public void sendColor(int red, int green, int blue) {
@@ -181,8 +192,8 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
                     HttpPost request = new HttpPost(url);
                     String a = "{\"lights\" : [{\"blue\":";
                     String b = ", \"green\": ";
-                    String c = ", \"intensity\": 0.5, \"lightId\": 1, \"red\": ";
-                    String d = "}], \"propagate\": true}";
+                    String c = ", \"intensity\": 0.5, \"lightId\": " + objy.getPosition() + ", \"red\": ";
+                    String d = "}], \"propagate\": false}";
                     String a1 = a.concat(BLUE.toString());
                     String a2 = b.concat(GREEN.toString());
                     String a3 = c.concat(RED.toString());
