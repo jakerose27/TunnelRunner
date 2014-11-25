@@ -1,6 +1,8 @@
 package net.wearethegreatest.tunnelrunner;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.hardware.Sensor;
@@ -41,6 +43,8 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
     public LightObject objy;
     private String question;
     private String answer;
+    private String nextAnswer;
+    private int currentPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -162,18 +166,70 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
         sendColor(objy.red, objy.green, objy.blue);
     }
 
-    public void moveLeft(View view) {
-        move(-1);
+    public void answerLeft(View view) {
+        currentPlayer = -1;
+        openAnswer(view);
+        openConfirm(view);
     }
 
-    public void moveRight(View view) {
-        move(1);
+    public void answerRight(View view) {
+        currentPlayer = 1;
+        openAnswer(view);
+        openConfirm(view);
     }
 
     public void move(int num) {
         objy.setPosition(objy.getPosition() + num);
         sendColor(objy.red, objy.green, objy.blue);
     }
+
+    private void openConfirm(View view) {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
+
+        alertDialogBuilder.setTitle(this.getTitle() + " decision");
+        alertDialogBuilder.setMessage("Say your answer out loud.");
+        // set positive button: Yes message
+        alertDialogBuilder.setPositiveButton("Okay.",new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog,int id) {
+                dialog.cancel();
+            }
+        });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        // show alert
+        alertDialog.show();
+    }
+
+    private void openAnswer(View view) {
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
+
+
+        alertDialogBuilder.setTitle(this.getTitle() + " decision");
+        alertDialogBuilder.setMessage("Answer: " + answer + "\nWere you correct?");
+        // set positive button: Yes message
+        alertDialogBuilder.setPositiveButton("Yes",new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog,int id) {
+                updateScore(true);
+            }
+        });
+        // set negative button: No message
+        alertDialogBuilder.setNegativeButton("No",new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog,int id) {
+                updateScore(false);
+            }
+        });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        // show alert
+        alertDialog.show();
+    }
+
+    public void updateScore(boolean correct){
+        System.out.println(currentPlayer + " was " + correct);
+        Button but = (Button) findViewById(R.id.question);
+        but.setText("New Question");
+    };
 
     public void randomizeQuestion() {
 
@@ -199,7 +255,8 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
                     System.out.println(jsonString);
                     JSONObject jsobjy = new JSONArray(jsonString).getJSONObject(0);
                     question = "Category: " + jsobjy.getJSONObject("category").getString("title") + "\n\n" + jsobjy.getString("question");
-                    answer = jsobjy.getString("answer");
+                    answer = nextAnswer;
+                    nextAnswer = jsobjy.getString("answer");
 
                     // handle response here...
                 } catch (Exception ex) {

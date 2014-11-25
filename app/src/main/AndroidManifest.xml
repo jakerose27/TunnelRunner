@@ -27,6 +27,12 @@
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings" >
         </activity>
-    </application>
+        <activity
+            android:name="net.wearethegreatest.tunnelrunner.Confirm"
+            android:label="Positive Answer"
+            android:parentActivityName="net.wearethegreatest.tunnelrunner.MainActivity" >
+        </activity>
+
+</application>
 
 </manifest>

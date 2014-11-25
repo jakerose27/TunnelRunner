@@ -3,14 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal" >
-
+er
     <Button
-        android:id="@+id/move_left"
+        android:id="@+id/answer_left"
         android:layout_width="wrap_content"
         android:layout_weight=".3"
         android:layout_height="match_parent"
         android:text="@string/left"
-        android:onClick="moveLeft"
+        android:onClick="answerLeft"
         android:background="@color/red"
         />
     <Button
@@ -24,11 +24,11 @@
         android:onClick="randomizeView"
         />
     <Button
-        android:id="@+id/move_right"
+        android:id="@+id/answer_right"
         android:layout_width="wrap_content"
         android:layout_weight=".3"
         android:layout_height="match_parent"
         android:text="@string/right"
-        android:onClick="moveRight"
+        android:onClick="answerRight"
         android:background="@color/blue"/>
 </LinearLayout>
