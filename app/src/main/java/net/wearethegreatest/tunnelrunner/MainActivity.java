@@ -167,13 +167,13 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
     }
 
     public void answerLeft(View view) {
-        currentPlayer = -1;
+        currentPlayer = 1;
         openAnswer(view);
         openConfirm(view);
     }
 
     public void answerRight(View view) {
-        currentPlayer = 1;
+        currentPlayer = -1;
         openAnswer(view);
         openConfirm(view);
     }
@@ -227,6 +227,8 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
 
     public void updateScore(boolean correct){
         System.out.println(currentPlayer + " was " + correct);
+        int score = correct ? currentPlayer : (-1) * currentPlayer;
+        move(score);
         Button but = (Button) findViewById(R.id.question);
         but.setText("New Question");
     };
@@ -302,21 +304,42 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
 
                 try {
                     HttpPost request = new HttpPost(url);
-                    String a = "{\"lights\" : [{\"blue\":";
-                    String b = ", \"green\": ";
-                    String c = ", \"intensity\": 0.5, \"lightId\": " + objy.getPosition() + ", \"red\": ";
-                    String d = "}], \"propagate\": false}";
-                    String a1 = a.concat(BLUE.toString());
-                    String a2 = b.concat(GREEN.toString());
-                    String a3 = c.concat(RED.toString());
-                    String s = a1 + a2 + a3 + d;
+                    String intro = "{\"lights\" : [";
+                    String item_intro = "{";
+                    String no_blue = "\"blue\": " + 0 + ", ";
+                    String blue = "\"blue\": " + 255 + ", ";
+                    String no_green = "\"green\": " + 0 + ", ";
+                    String no_red = "\"red\": " + 0 + ", ";
+                    String red = "\"red\": " + 255 + ", ";
+                    String id1 = "\"lightId\": " + 1 + ", ";
+                    String id = "\"lightId\": " + objy.getPosition() + ", ";
+                    String intensity = "\"intensity\": 0.5";
+                    String item_conclusion1 = "}, ";
+                    String item_conclusion2 = "} ";
+                    String conclusion = "], \"propagate\": true}";
 
+                    String item1 = item_intro + red + no_green + no_blue + id1 + intensity + item_conclusion1;
+                    String item2 = item_intro + no_red + no_green + blue + id + intensity + item_conclusion2;
+//                    String item2 = "";
+                    String s = intro + item1 + item2 + conclusion;
+
+//                    String a = "{\"lights\" : [{\"blue\":";
+//                    String b = ", \"green\": ";
+//                    String c = ", \"intensity\": 0.5, \"lightId\": " + objy.getPosition() + ", \"red\": ";
+//                    String d = "}], \"propagate\": false}";
+//                    String a1 = a.concat(BLUE.toString());
+//                    String a2 = b.concat(GREEN.toString());
+//                    String a3 = c.concat(RED.toString());
+//                    String s = a1 + a2 + a3 + d;
+
+                    System.out.println("String: " + s);
 
                     StringEntity params = new StringEntity(s);
                     request.addHeader("content-type",
                             "application/json");
                     request.setEntity(params);
                     HttpResponse response = httpClient.execute(request);
+                    System.out.println("Response" + response.toString());
                     // handle response here...
                 } catch (Exception ex) {
                     // handle exception here

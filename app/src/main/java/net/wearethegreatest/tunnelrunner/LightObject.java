@@ -4,7 +4,7 @@ public class LightObject {
     final public int MIN_POS = 1;
     final public int MAX_POS = 32;
 
-    private int position = 16;
+    private int position = 17;
     public int red = 255;
     public int green = 0;
     public int blue = 0;
