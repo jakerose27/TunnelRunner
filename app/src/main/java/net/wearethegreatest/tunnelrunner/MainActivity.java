@@ -9,6 +9,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Looper;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
@@ -16,14 +17,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-
-import android.preference.PreferenceManager;
+import android.widget.Button;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.Random;
 
@@ -35,6 +39,8 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
     private long lastUpdate;
     private int position;
     public LightObject objy;
+    private String question;
+    private String answer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +57,10 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
         lastUpdate = System.currentTimeMillis();
 
         objy = new LightObject();
+        question = null;
+        answer = null;
         randomizeColor();
+        randomizeQuestion();
     }
 
     public void onAccuracyChanged(Sensor sensor, int foo) {
@@ -82,7 +91,7 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
             }
             lastUpdate = actualTime;
 
-            randomizeColor();
+            randomizeQuestion();
         }
     }
 
@@ -142,7 +151,7 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
     }
 
     public void randomizeView(View view) {
-        randomizeColor();
+        randomizeQuestion();
     }
 
     public void randomizeColor() {
@@ -164,6 +173,52 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
     public void move(int num) {
         objy.setPosition(objy.getPosition() + num);
         sendColor(objy.red, objy.green, objy.blue);
+    }
+
+    public void randomizeQuestion() {
+
+        // `this` will refer to thread once inside the thread
+        final Context thisActivity = this;
+
+        Thread t = new Thread() {
+
+            public void run() {
+                Looper.prepare();
+                HttpClient httpClient = new DefaultHttpClient();
+
+                // Get IP address from prefs
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(thisActivity);
+
+                // Format URL
+                String url = "http://jservice.io/api/random/";
+
+                try {
+                    HttpGet request = new HttpGet(url);
+                    HttpResponse response = httpClient.execute(request);
+                    String jsonString = EntityUtils.toString(response.getEntity());
+                    System.out.println(jsonString);
+                    JSONObject jsobjy = new JSONArray(jsonString).getJSONObject(0);
+                    question = "Category: " + jsobjy.getJSONObject("category").getString("title") + "\n\n" + jsobjy.getString("question");
+                    answer = jsobjy.getString("answer");
+
+                    // handle response here...
+                } catch (Exception ex) {
+                    // handle exception here
+                    System.out.println(ex);
+                } finally {
+                    httpClient.getConnectionManager().shutdown();
+                    Looper.loop();
+                }
+            }
+        };
+        t.start();
+
+        if (question != null){
+            System.out.println("Q: " + question);
+            Button but = (Button) findViewById(R.id.question);
+            but.setText(question);
+            question = null;
+        }
     }
 
     public void sendColor(int red, int green, int blue) {

@@ -6,7 +6,7 @@
     <string name="edit_message">Enter a message</string>
     <string name="button_send">Send</string>
     <string name="title_activity_main">MainActivity</string>
-    <string name="left">Move Left</string>
-    <string name="pause">Random Color\n\nPress or Shake\nto Activate</string>
-    <string name="right">Move Right</string>
+    <string name="left">Answer</string>
+    <string name="pause">New Question</string>
+    <string name="right">Answer</string>
 </resources>

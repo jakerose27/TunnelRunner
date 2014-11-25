@@ -10,19 +10,25 @@
         android:layout_weight=".3"
         android:layout_height="match_parent"
         android:text="@string/left"
-        android:onClick="moveLeft"/>
+        android:onClick="moveLeft"
+        android:background="@color/red"
+        />
     <Button
-        android:id="@+id/send_green"
+        android:id="@+id/question"
         android:layout_width="wrap_content"
         android:layout_weight=".3"
         android:layout_height="match_parent"
+        android:maxWidth="75dp"
         android:text="@string/pause"
-        android:onClick="randomizeView"/>
+        android:layout_centerVertical="true"
+        android:onClick="randomizeView"
+        />
     <Button
         android:id="@+id/move_right"
         android:layout_width="wrap_content"
         android:layout_weight=".3"
         android:layout_height="match_parent"
         android:text="@string/right"
-        android:onClick="moveRight"/>
+        android:onClick="moveRight"
+        android:background="@color/blue"/>
 </LinearLayout>
