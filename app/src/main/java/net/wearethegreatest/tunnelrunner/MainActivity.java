@@ -168,14 +168,14 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
 
     public void answerLeft(View view) {
         currentPlayer = 1;
-        openAnswer(view);
-        openConfirm(view);
+        openAnswer(view, currentPlayer);
+        openConfirm(view, currentPlayer);
     }
 
     public void answerRight(View view) {
         currentPlayer = -1;
-        openAnswer(view);
-        openConfirm(view);
+        openAnswer(view, currentPlayer);
+        openConfirm(view, currentPlayer);
     }
 
     public void move(int num) {
@@ -183,11 +183,17 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
         sendColor(objy.red, objy.green, objy.blue);
     }
 
-    private void openConfirm(View view) {
+    private void openConfirm(View view, int player) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
 
-        alertDialogBuilder.setTitle(this.getTitle() + " decision");
+        if (player==-1) {
+            alertDialogBuilder.setTitle("Blue Player");
+        }
+        else if (player==1){
+            alertDialogBuilder.setTitle("Red Player");
+        }
         alertDialogBuilder.setMessage("Say your answer out loud.");
+
         // set positive button: Yes message
         alertDialogBuilder.setPositiveButton("Okay.",new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog,int id) {
@@ -196,16 +202,22 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
         });
 
         AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.setCanceledOnTouchOutside(false);
         // show alert
         alertDialog.show();
     }
 
-    private void openAnswer(View view) {
+    private void openAnswer(View view, int player) {
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
 
 
-        alertDialogBuilder.setTitle(this.getTitle() + " decision");
+        if (player==-1) {
+            alertDialogBuilder.setTitle("Blue Player");
+        }
+        else if (player==1){
+            alertDialogBuilder.setTitle("Red Player");
+        }
         alertDialogBuilder.setMessage("Answer: " + answer + "\nWere you correct?");
         // set positive button: Yes message
         alertDialogBuilder.setPositiveButton("Yes",new DialogInterface.OnClickListener() {
@@ -221,6 +233,7 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
         });
 
         AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.setCanceledOnTouchOutside(false);
         // show alert
         alertDialog.show();
     }
