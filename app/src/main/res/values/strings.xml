@@ -9,4 +9,5 @@
     <string name="left">Answer</string>
     <string name="pause">New Question</string>
     <string name="right">Answer</string>
+    <string name="splash">START</string>
 </resources>

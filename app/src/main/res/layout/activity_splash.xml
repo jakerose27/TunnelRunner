@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/grey">
+
+
+    <ImageView
+        android:id="@+id/tunnel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/tunnel"
+        android:adjustViewBounds="true"
+        android:scaleType="centerCrop"
+        android:layout_above="@+id/quiz"
+        android:layout_centerHorizontal="true" />
+    <ImageView
+        android:id="@+id/quiz"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/quizedition"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
+    <TextView
+        android:layout_width="350dp"
+        android:layout_height="20dp"
+        android:layout_below="@+id/quiz"
+        android:layout_centerHorizontal="true"
+        android:text="Robert Liebowitz, Laurence Meyers, Jake Rosenberg"
+        android:id="@+id/authors" />
+
+</RelativeLayout>
