@@ -39,12 +39,12 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
     private SensorManager mSensorManager;
     private Sensor mSensor;
     private long lastUpdate;
-    private int position;
     public LightObject objy;
     private String question;
     private String answer;
     private String nextAnswer;
     private int currentPlayer;
+    private boolean questionAnswered;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +63,7 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
         objy = new LightObject();
         question = null;
         answer = null;
+        questionAnswered = true;
         randomizeColor();
         randomizeQuestion();
     }
@@ -167,12 +168,20 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
     }
 
     public void answerLeft(View view) {
+        if (questionAnswered)
+            return;
+
+        questionAnswered = true;
         currentPlayer = 1;
         openAnswer(view, currentPlayer);
         openConfirm(view, currentPlayer);
     }
 
     public void answerRight(View view) {
+        if (questionAnswered)
+            return;
+
+        questionAnswered = true;
         currentPlayer = -1;
         openAnswer(view, currentPlayer);
         openConfirm(view, currentPlayer);
@@ -244,6 +253,17 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
         move(score);
         Button but = (Button) findViewById(R.id.question);
         but.setText("New Question");
+
+        if (objy.getPosition() == 1 || objy.getPosition() == 32) {
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
+            String playerName = objy.getPosition() == 1 ? "Blue Player" : "Red Player";
+
+            alertDialogBuilder.setMessage(playerName + " wins!");
+            AlertDialog alertDialog = alertDialogBuilder.create();
+            alertDialog.show();
+
+            objy.setPosition(17);
+        }
     };
 
     public void randomizeQuestion() {
@@ -289,6 +309,7 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
             System.out.println("Q: " + question);
             Button but = (Button) findViewById(R.id.question);
             but.setText(question);
+            questionAnswered = false;
             question = null;
         }
     }
