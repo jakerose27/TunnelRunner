@@ -291,7 +291,7 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
                     JSONObject jsobjy = new JSONArray(jsonString).getJSONObject(0);
                     question = "Category: " + jsobjy.getJSONObject("category").getString("title") + "\n\n" + jsobjy.getString("question");
                     answer = nextAnswer;
-                    nextAnswer = jsobjy.getString("answer");
+                    nextAnswer = jsobjy.getString("answer").replaceAll("\\<.*?\\>", "");
 
                     // handle response here...
                 } catch (Exception ex) {
